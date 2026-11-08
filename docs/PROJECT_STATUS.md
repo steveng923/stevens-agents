@@ -1,31 +1,17 @@
-# Permission model
+# Project status
 
-This project now includes a simple permission model to reflect how specialized agents should operate under a least-privilege policy.
+## Current stage: Stage 2 foundation
 
-## Current permission levels
+This branch now contains a React/TypeScript/Vite frontend and FastAPI/SQLite backend. The UI supports local agent profiles, task creation/completion, Alfred local-rule chat with conversation persistence, and user-controlled memory create/list/delete.
 
-- `read`: Retrieve allowed information. Examples: personal tasks, goals, or calendar data that the user has authorized.
-- `suggest`: Prepare recommendations or proposed actions, but wait for explicit approval before destructive or sensitive actions.
-- `execute`: Run low-risk actions in-app only, and only after the user has approved the workflow or a prior policy allows it.
+### Important limitations
+- The assistant is **not an AI model**. It uses simple local rules and is labeled as a local demo.
+- There is no authentication or multi-user ownership. Keep the backend local and do not enter sensitive personal data or expose it to the public internet.
+- No Google Calendar, email, sports, or other external integration is connected.
+- This agent can edit GitHub repository contents, but cannot access your VS Code window or run commands in your computer's terminal from this chat. The changes here were not built or tested in your local VS Code environment.
 
-## Seeded permissions
-
-The backend seeds a small set of default permissions for the initial agents:
-
-- Alfred: read, suggest, execute
-- Atlas: read
-- Echo: read
-- Forge: suggest
-
-These are intentionally minimal and local-only. They are not a substitute for real authentication, per-user access policies, or approval workflows.
-
-## Future plan
-
-The next stage will add:
-- real user accounts and auth
-- per-user permission assignments
-- approval checkpoints for calendar edits, email sends, and sensitive actions
-- execution history and audit logging
-- explicit `READ`, `SUGGEST`, and `EXECUTE` enforcement on server-side endpoints
-
-No external account or permission system is connected yet.
+### Next work
+1. Open this repository/branch in VS Code and run the commands in `TESTING.md`.
+2. Fix issues found by real tool output, then add a CI workflow.
+3. Implement authentication and ownership boundaries before any hosted deployment or sensitive data.
+4. Continue with a true provider adapter, user-approved memory retrieval, orchestration, then calendar and other stages.

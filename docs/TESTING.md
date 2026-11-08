@@ -1,41 +1,26 @@
-# API documentation — Stage 2
+# Testing and quality
 
-Base URL in local development: `http://localhost:8000`. Vite forwards browser `/api/*` requests to this service.
+Install and run locally from the repository root:
 
-## `GET /api/health`
-Returns `{ "status": "ok", "service": "stevens-agents-api" }`.
+```bash
+npm install
+npm run typecheck
+npm run build
 
-## `GET /api/providers`
-Returns the currently available local/stub providers.
+python -m venv .venv
+# Windows PowerShell: .venv\\Scripts\\Activate.ps1
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+python -m unittest discover -s backend/tests -v
+```
 
-## `GET /api/agents`
-Returns seeded profile objects: `id`, `name`, `department`, `purpose`.
+The Python unit tests cover seeded agent retrieval, task validation and lifecycle, missing task responses, persisted chat, and memory creation/deletion. These tests are present but were not run by the GitHub file-editing environment.
 
-## `GET /api/tasks`
-Returns local tasks ordered with open tasks first.
+Run backend and frontend together during manual smoke testing:
 
-## `POST /api/tasks`
-Creates a task. JSON body: `{ "title": "Review syllabus" }`. Returns the created task.
+```bash
+uvicorn app.main:app --reload --app-dir backend
+npm run dev
+```
 
-## `PATCH /api/tasks/{task_id}`
-Changes completion status. JSON body: `{ "completed": true }`.
-
-## `GET /api/conversations`
-Returns prior chat sessions.
-
-## `POST /api/conversations`
-Creates a new conversation object.
-
-## `GET /api/conversations/{conversation_id}/messages`
-Returns the messages for a given conversation.
-
-## `POST /api/chat`
-Sends a user message to Alfred and returns the assistant reply. JSON body: `{ "message": "What should I focus on today?", "conversation_id": 1, "agent": "Alfred" }`.
-
-## `GET /api/memory`
-Returns saved preferences and context entries.
-
-## `POST /api/memory`
-Saves a memory entry. JSON body: `{ "key": "focus", "value": "Prioritize the highest-value task", "category": "goals", "source": "user" }`.
-
-FastAPI validates request bodies and publishes the OpenAPI UI at `/docs`.
+Open the frontend URL from Vite and verify task add/complete, chat persistence after refresh, and memory save/delete. Current known gap: no browser automation suite, authentication tests, production data access policy, or integration tests.
