@@ -1,43 +1,27 @@
-# Roadmap
+# Project status
 
-## Stage 1 — Existing project and foundation
-- [x] Inspect repository (minimal README only; no existing implementation to preserve).
-- [x] Establish React + TypeScript + Vite frontend and FastAPI + SQLite local backend.
-- [x] Build responsive dashboard and functional task create/complete flow.
-- [x] Seed initial agent profiles and expose them in the command center.
-- [x] Add project architecture, schema, API, security, test, and deployment documentation.
-- [ ] Install dependencies, run tests/type checks/build, and fix issues (not run in this environment).
-- [ ] Add robust authentication, user scoping, and migrations before handling personal data.
+## Current stage: Stage 2 — Alfred foundation in progress
 
-## Stage 2 — Alfred
-- [ ] Provider-neutral AI service with free/local provider options and server-only credentials.
-- [ ] Chat conversations and messages persisted in the database.
-- [ ] Explicit, user-controlled memory with source and deletion/export controls.
-- [ ] Agent profiles, tool permissions, execution history, and bounded orchestration.
-- [ ] Tests for provider failures, memory retrieval, and READ/SUGGEST/EXECUTE controls.
+### Repository inspection
+- The repository began with only a minimal README and no implementation to preserve.
+- Stage 1 created the initial dark productivity dashboard, FastAPI backend, SQLite persistence, and a practical local development foundation.
 
-## Stage 3 — Productivity
-- [ ] Authenticated Google Calendar OAuth, ICS preview/import, timezone-aware events.
-- [ ] Tasks, projects, goals, recurrence, notifications, and approval checkpoints.
+### Implemented in this branch
+- Responsive dashboard and navigation in the Vite React app.
+- FastAPI service with SQLite-backed tasks and seeded agents.
+- Local provider abstraction with a safe mock provider.
+- Alfred chat conversation and memory persistence in SQLite.
+- Automated backend tests covering agent, task, chat, and memory behavior.
+- Updated documentation for the current stage and roadmap.
 
-## Stage 4 — Education and career
-- [ ] Courses, assignments, exams, study tools, document/syllabus extraction with verification.
-- [ ] Resume and internship/application tracking.
+### Not implemented / not verified
+- User authentication and multi-user separation.
+- Google Calendar, sports feeds, AI provider credentials, and external services.
+- Full productivity modules, documents/email, sports intelligence, fitness dashboards, and automations.
+- End-to-end browser test or production deployment. No local build/test commands were executed in this environment because terminal access for the repo is not available here.
 
-## Stage 5 — The Arena
-- [ ] Licensed/reliable provider adapters for soccer, MMA, and basketball, favorites, freshness/source labels.
-- [ ] Never substitute generated values for unavailable live data.
-
-## Stage 6 — Fitness
-- [ ] Exercise library, routines, workout logging, history, progress, and recovery-aware suggestions.
-
-## Stage 7 — Advanced departments
-- [ ] Approval-gated email tools, document archive, manual finance, travel, contacts, meals, entertainment, and research.
-
-## Stage 8 — Automation and advanced AI
-- [ ] Trigger/condition/action workflow system, approvals, retries, audit history, and expanded memory/voice options.
-
-## Stage 9 — Final quality
-- [ ] Security and privacy review, full automated test coverage, performance, accessibility, mobile polish, and deployment verification.
-
-Stages beyond Stage 1 are not implemented. External connections require real provider credentials and explicit authorization.
+### Next work
+1. Validate the code in a local terminal with the documented setup commands.
+2. Fix any issues surfaced by build, typecheck, or unit tests.
+3. Continue to Stage 2 with permission-aware memory and orchestrated agent delegation.
+4. Advance the roadmap in `ROADMAP.md` once the Stage 2 foundation is stable.

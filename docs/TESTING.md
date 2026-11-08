@@ -1,25 +1,41 @@
-# Testing and quality
+# API documentation — Stage 2
 
-## Commands
+Base URL in local development: `http://localhost:8000`. Vite forwards browser `/api/*` requests to this service.
 
-```bash
-npm install
-npm run typecheck
-npm run build
+## `GET /api/health`
+Returns `{ "status": "ok", "service": "stevens-agents-api" }`.
 
-python -m venv .venv
-# Windows: .venv\Scripts\activate
-source .venv/bin/activate
-pip install -r backend/requirements.txt
-python -m unittest discover -s backend/tests -v
-```
+## `GET /api/providers`
+Returns the currently available local/stub providers.
 
-## Current automated tests
+## `GET /api/agents`
+Returns seeded profile objects: `id`, `name`, `department`, `purpose`.
 
-`backend/tests/test_api.py` covers seeded agent retrieval, persistent task create/update, missing-task handling, and blank-title rejection. Tests use an isolated temporary SQLite file.
+## `GET /api/tasks`
+Returns local tasks ordered with open tasks first.
 
-## Not yet covered
+## `POST /api/tasks`
+Creates a task. JSON body: `{ "title": "Review syllabus" }`. Returns the created task.
 
-Frontend/component tests, authentication, user permissions, AI conversations, memory, calendar/timezones/ICS, sports provider errors, document processing, workout calculations, and automation execution are not implemented because those features do not exist yet.
+## `PATCH /api/tasks/{task_id}`
+Changes completion status. JSON body: `{ "completed": true }`.
 
-The commands above are documented but have not been executed in this environment; check `PROJECT_STATUS.md` for the verification status.
+## `GET /api/conversations`
+Returns prior chat sessions.
+
+## `POST /api/conversations`
+Creates a new conversation object.
+
+## `GET /api/conversations/{conversation_id}/messages`
+Returns the messages for a given conversation.
+
+## `POST /api/chat`
+Sends a user message to Alfred and returns the assistant reply. JSON body: `{ "message": "What should I focus on today?", "conversation_id": 1, "agent": "Alfred" }`.
+
+## `GET /api/memory`
+Returns saved preferences and context entries.
+
+## `POST /api/memory`
+Saves a memory entry. JSON body: `{ "key": "focus", "value": "Prioritize the highest-value task", "category": "goals", "source": "user" }`.
+
+FastAPI validates request bodies and publishes the OpenAPI UI at `/docs`.

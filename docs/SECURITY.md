@@ -1,16 +1,25 @@
-# Security
+# Testing and quality
 
-## Current status
+## Commands
 
-This repository contains no committed secrets and needs no credentials to run Stage 1. The API is unauthenticated and stores tasks in a local SQLite database. It is strictly for local development; do not make it internet-accessible or use it for sensitive personal information. CORS settings only limit browser origins and do not provide access control.
+```bash
+npm install
+npm run typecheck
+npm run build
 
-## Required before real personal data or deployment
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+python -m unittest discover -s backend/tests -v
+```
 
-- Implement authentication, secure session/cookie handling, account recovery, and authorization checks.
-- Scope every personal record to the authenticated user; apply PostgreSQL row-level policies if Supabase is selected.
-- Store provider secrets only in backend environment variables or a managed secret store. Never put keys in `VITE_*` variables or client bundles.
-- Add CSRF protection as appropriate, input/rate limiting, security headers, audit logs, backups, retention/deletion, and dependency/security scanning.
-- Require user confirmation for external communications, deletions, and sensitive calendar changes. Do not implement financial transaction execution.
-- Test READ, SUGGEST, and EXECUTE permissions; default to least privilege.
+## Current automated tests
 
-No Google, email, AI, or sports provider integration is connected at this stage.
+`backend/tests/test_api.py` covers seeded agent retrieval, task creation/update, missing-task handling, blank-title rejection, and Alfred chat/memory flow using a temporary SQLite database.
+
+## Not yet covered
+
+Frontend component tests, authentication, user permissions, AI provider integration, sports provider errors, document processing, workout calculations, and automation execution remain future work.
+
+The commands above are documented but not executed in this environment because terminal access is unavailable here.

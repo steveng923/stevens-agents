@@ -1,20 +1,43 @@
-# Architecture
+# Roadmap
 
-## Current Stage 1 structure
+## Stage 1 — Existing project and foundation
+- [x] Inspect repository (minimal README only; no existing implementation to preserve).
+- [x] Establish React + TypeScript + Vite frontend and FastAPI + SQLite local backend.
+- [x] Build responsive dashboard and functional task create/complete flow.
+- [x] Seed initial agent profiles and expose them in the command center.
+- [x] Add project architecture, schema, API, security, test, and deployment documentation.
+- [ ] Install dependencies, run tests/type checks/build, and fix issues in a real terminal environment.
+- [ ] Add robust authentication, user scoping, and migrations before handling private user data.
 
-- `src/`: React + TypeScript single-page application, built with Vite.
-- `src/App.tsx`: responsive navigation/dashboard and API-backed task/agent views.
-- `src/styles.css`: dark navy, charcoal, gold-accent responsive design system.
-- `backend/app/main.py`: FastAPI endpoints and local SQLite persistence using Python's standard `sqlite3` module.
-- `backend/data/`: local database location, ignored by Git.
-- `backend/tests/`: Python `unittest` coverage for database-backed API functions.
+## Stage 2 — Alfred
+- [x] Provider-neutral local service abstraction for safe development orchestration.
+- [x] Chat conversations persisted in SQLite.
+- [x] Memory entries with source tracking and retrieval endpoints.
+- [ ] Permission-aware agent delegation with execution history and explicit approval gates.
+- [ ] Extended tests for memory retrieval, conversation flow, and provider fallback behavior.
 
-The Vite development server proxies `/api` requests to the local FastAPI service on port 8000. FastAPI serves interactive OpenAPI docs at `/docs`.
+## Stage 3 — Productivity
+- [ ] Authenticated Google Calendar OAuth, ICS preview/import, timezone-aware events.
+- [ ] Tasks, projects, goals, recurrence, notifications, and approval checkpoints.
 
-## Intended growth path
+## Stage 4 — Education and career
+- [ ] Courses, assignments, exams, study tools, document/syllabus extraction with verification.
+- [ ] Resume and internship/application tracking.
 
-Keep integrations and AI providers behind server-side service interfaces. Add user authentication and ownership boundaries before personal records, then use migrations and PostgreSQL for multi-user or hosted deployments. Keep externally sourced sports information separate from a user's preferences and notes. Make external or destructive actions approval-gated and auditable.
+## Stage 5 — The Arena
+- [ ] Licensed/reliable provider adapters for soccer, MMA, and basketball, favorites, freshness/source labels.
+- [ ] Never substitute generated values for unavailable live data.
 
-## Trust boundaries and current limitations
+## Stage 6 — Fitness
+- [ ] Exercise library, routines, workout logging, history, progress, and recovery-aware suggestions.
 
-The current API is an unauthenticated, single-user local prototype. SQLite rows do not have user ownership. CORS is restricted to local Vite development origins, but CORS is not authentication. Do not deploy this API publicly or store sensitive data. No AI or third-party integration is connected.
+## Stage 7 — Advanced departments
+- [ ] Approval-gated email tools, document archive, manual finance, travel, contacts, meals, entertainment, and research.
+
+## Stage 8 — Automation and advanced AI
+- [ ] Trigger/condition/action workflow system, approvals, retries, audit history, and expanded memory/voice options.
+
+## Stage 9 — Final quality
+- [ ] Security and privacy review, full automated test coverage, performance, accessibility, mobile polish, and deployment verification.
+
+The project is still local-only. External connections require real provider credentials and explicit authorization.

@@ -1,20 +1,19 @@
-# API documentation — Stage 1
+# Architecture
 
-Base URL in local development: `http://localhost:8000`. Vite forwards browser `/api/*` requests to this service.
+## Current Stage 2 structure
 
-## `GET /api/health`
-Returns `{ "status": "ok", "service": "stevens-agents-api" }`.
+- `src/`: React + TypeScript single-page application built with Vite.
+- `src/App.tsx`: responsive command-center dashboard, task management, and Alfred chat view.
+- `src/styles.css`: dark navy, charcoal, gold-accent visual system.
+- `backend/app/main.py`: FastAPI service with local SQLite persistence, seeded agent profiles, provider abstraction, chat, and memory endpoints.
+- `backend/tests/`: API tests for the Stage 2 foundation.
 
-## `GET /api/agents`
-Returns seeded profile objects: `id`, `name`, `department`, `purpose`. Profiles are starter data, not autonomous AI agents.
+The UI is intentionally server-backed. The local FastAPI service exposes `GET /api/agents`, `GET /api/tasks`, `POST /api/tasks`, `PATCH /api/tasks/{id}`, `POST /api/chat`, and `GET /api/memory` so that the app remains structured around real data. The app is not yet authenticated and should only be used in a local development environment.
 
-## `GET /api/tasks`
-Returns local tasks ordered with open tasks first. Each object contains `id`, `title`, `completed`, and `created_at`.
+## Provider strategy
 
-## `POST /api/tasks`
-Creates a task. JSON body: `{ "title": "Review syllabus" }`. Title must contain 1–200 characters after trimming. Returns the created task with HTTP 201.
+Providers are intentionally abstracted behind the backend. The current default is a safe `mock-local` provider, which generates deterministic guidance without external calls. This keeps the system free and local while preserving a clean place to add Ollama or an API-backed provider later.
 
-## `PATCH /api/tasks/{task_id}`
-Changes completion status. JSON body: `{ "completed": true }`. Returns updated task or HTTP 404 if missing.
+## Trust boundaries and current limitations
 
-FastAPI validates request bodies and publishes the local OpenAPI UI at `/docs`. There is currently no authentication, authorization, rate limiting, per-user access control, or production API hardening.
+The current app is a local, single-user prototype. SQLite rows do not yet have user ownership or permissions, and no real external integrations are connected. The system must remain local-only until proper authentication, access controls, and provider credential management are implemented.
