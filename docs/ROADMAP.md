@@ -1,27 +1,25 @@
 # Project status
 
-## Current stage: Stage 2 — Alfred foundation in progress
+## Current stage: Stage 2 — Alfred foundation with permission-aware scaffolding
 
-### Repository inspection
-- The repository began with only a minimal README and no implementation to preserve.
-- Stage 1 created the initial dark productivity dashboard, FastAPI backend, SQLite persistence, and a practical local development foundation.
-
-### Implemented in this branch
+### Implemented in the branch
 - Responsive dashboard and navigation in the Vite React app.
-- FastAPI service with SQLite-backed tasks and seeded agents.
-- Local provider abstraction with a safe mock provider.
-- Alfred chat conversation and memory persistence in SQLite.
-- Automated backend tests covering agent, task, chat, and memory behavior.
-- Updated documentation for the current stage and roadmap.
+- FastAPI local backend with SQLite persistence.
+- Seeded agent profiles.
+- Task create/complete flow.
+- Alfred chat conversation persistence and memory entries.
+- Permission metadata for the initial agent profiles.
+- Updated frontend to surface permission access for the local team and provider status.
+- Documentation for the permission model and roadmap updates.
 
 ### Not implemented / not verified
-- User authentication and multi-user separation.
-- Google Calendar, sports feeds, AI provider credentials, and external services.
-- Full productivity modules, documents/email, sports intelligence, fitness dashboards, and automations.
-- End-to-end browser test or production deployment. No local build/test commands were executed in this environment because terminal access for the repo is not available here.
+- Real authentication and user-level ownership.
+- Real API integrations (Google Calendar, email, sports feeds, AI provider APIs).
+- Full Stage 2 orchestration, execution logs, and approval workflows.
+- Local build/test execution in this environment, since terminal access is not available here.
 
 ### Next work
-1. Validate the code in a local terminal with the documented setup commands.
-2. Fix any issues surfaced by build, typecheck, or unit tests.
-3. Continue to Stage 2 with permission-aware memory and orchestrated agent delegation.
-4. Advance the roadmap in `ROADMAP.md` once the Stage 2 foundation is stable.
+1. Run the install/type-check/build/test commands in a real terminal.
+2. Fix any issues surfaced by the local environment.
+3. Advance to permission-aware agent orchestration and execution history.
+4. Continue through Stage 3 and beyond.

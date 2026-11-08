@@ -22,6 +22,15 @@ AGENTS = [
     {"id": "forge", "name": "Forge", "department": "Sports and fitness", "purpose": "Gym and strength training"},
 ]
 
+PERMISSIONS = [
+    {"agent_id": "alfred", "permission": "read", "scope": "personal memory and tasks", "description": "Read authorized personal context to organize and summarize."},
+    {"agent_id": "alfred", "permission": "suggest", "scope": "daily actions and planning", "description": "Propose schedule and task adjustments for approval."},
+    {"agent_id": "alfred", "permission": "execute", "scope": "low-risk local action logging", "description": "Execute non-destructive local actions inside the app shell."},
+    {"agent_id": "atlas", "permission": "read", "scope": "calendar and free time", "description": "Read schedule blocks and calendar availability."},
+    {"agent_id": "echo", "permission": "read", "scope": "task and project records", "description": "Read tasks and project status for planning."},
+    {"agent_id": "forge", "permission": "suggest", "scope": "training and recovery guidance", "description": "Suggest workout or recovery ideas based on stored data."},
+]
+
 PROVIDER_CONFIG = {
     "mock": {"name": "Local mock provider", "status": "ready", "description": "Safe, deterministic local assistant for development."},
     "ollama": {"name": "Ollama (optional)", "status": "disabled", "description": "Connect a local Ollama model when installed on the machine."},
@@ -71,10 +80,26 @@ def initialize_database() -> None:
                 source TEXT NOT NULL DEFAULT 'user',
                 created_at TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS agent_permissions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                agent_id TEXT NOT NULL,
+                permission TEXT NOT NULL CHECK(permission IN ('read', 'suggest', 'execute')),
+                scope TEXT NOT NULL,
+                description TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY(agent_id) REFERENCES agents(id) ON DELETE CASCADE
+            );
         """)
         connection.executemany(
             "INSERT OR IGNORE INTO agents (id, name, department, purpose) VALUES (?, ?, ?, ?)",
             [(agent["id"], agent["name"], agent["department"], agent["purpose"]) for agent in AGENTS],
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO agent_permissions (agent_id, permission, scope, description, created_at) VALUES (?, ?, ?, ?, ?)",
+            [
+                (entry["agent_id"], entry["permission"], entry["scope"], entry["description"], utc_now())
+                for entry in PERMISSIONS
+            ],
         )
 
 
@@ -113,15 +138,6 @@ class MemoryCreate(BaseModel):
     source: str = "user"
 
 
-class MemoryEntryResponse(BaseModel):
-    id: int
-    key: str
-    value: str
-    category: str
-    source: str
-    created_at: str
-
-
 def task_dict(row: sqlite3.Row) -> dict[str, Any]:
     return {"id": row["id"], "title": row["title"], "completed": bool(row["completed"]), "created_at": row["created_at"]}
 
@@ -144,6 +160,17 @@ def memory_dict(row: sqlite3.Row) -> dict[str, Any]:
         "value": row["value"],
         "category": row["category"],
         "source": row["source"],
+        "created_at": row["created_at"],
+    }
+
+
+def permission_dict(row: sqlite3.Row) -> dict[str, Any]:
+    return {
+        "id": row["id"],
+        "agent_id": row["agent_id"],
+        "permission": row["permission"],
+        "scope": row["scope"],
+        "description": row["description"],
         "created_at": row["created_at"],
     }
 
@@ -200,6 +227,15 @@ def list_agents() -> list[dict]:
     with database() as connection:
         rows = connection.execute("SELECT id, name, department, purpose FROM agents ORDER BY rowid").fetchall()
     return [dict(row) for row in rows]
+
+
+@app.get("/api/agent-permissions")
+def list_permissions() -> list[dict[str, Any]]:
+    with database() as connection:
+        rows = connection.execute(
+            "SELECT id, agent_id, permission, scope, description, created_at FROM agent_permissions ORDER BY agent_id, permission"
+        ).fetchall()
+    return [permission_dict(row) for row in rows]
 
 
 @app.get("/api/tasks")

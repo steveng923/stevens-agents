@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 
 type Agent = { id: string; name: string; department: string; purpose: string };
+type Permission = { id: number; agent_id: string; permission: 'read' | 'suggest' | 'execute'; scope: string; description: string; created_at: string };
 type Task = { id: number; title: string; completed: boolean; created_at: string };
 type Conversation = { id: number; title: string; created_at: string; message_count: number };
 type Message = { id: number; conversation_id: number; role: 'user' | 'assistant'; content: string; model: string; created_at: string };
@@ -24,6 +25,7 @@ const navigation: { name: Page; icon: typeof LayoutDashboard }[] = [
 function App() {
   const [page, setPage] = useState<Page>('Overview');
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
@@ -41,20 +43,23 @@ function App() {
   async function loadData() {
     setLoading(true);
     try {
-      const [agentResponse, taskResponse, conversationResponse, memoryResponse] = await Promise.all([
+      const [agentResponse, permissionResponse, taskResponse, conversationResponse, memoryResponse] = await Promise.all([
         fetch('/api/agents'),
+        fetch('/api/agent-permissions'),
         fetch('/api/tasks'),
         fetch('/api/conversations'),
         fetch('/api/memory'),
       ]);
-      if (!agentResponse.ok || !taskResponse.ok || !conversationResponse.ok || !memoryResponse.ok) {
+      if (!agentResponse.ok || !permissionResponse.ok || !taskResponse.ok || !conversationResponse.ok || !memoryResponse.ok) {
         throw new Error('The local API returned an error.');
       }
       const loadedAgents = await agentResponse.json() as Agent[];
+      const loadedPermissions = await permissionResponse.json() as Permission[];
       const loadedTasks = await taskResponse.json() as Task[];
       const loadedConversations = await conversationResponse.json() as Conversation[];
       const loadedMemory = await memoryResponse.json() as MemoryEntry[];
       setAgents(loadedAgents);
+      setPermissions(loadedPermissions);
       setTasks(loadedTasks);
       setConversations(loadedConversations);
       setMemoryEntries(loadedMemory);
@@ -241,6 +246,22 @@ function App() {
                     <div className="empty-state"><span className="empty-icon"><ShieldCheck size={18} /></span><b>No saved memory yet.</b><span>Preferences and goals become reusable context as the app grows.</span></div>
                   )}
                 </article>
+                <article className="panel permissions-panel">
+                  <div className="panel-heading"><div><p className="eyebrow">ACCESS</p><h2>Permission model</h2></div></div>
+                  {permissions.length ? (
+                    <ul className="permission-list">{permissions.slice(0, 6).map((entry) => (
+                      <li key={entry.id}>
+                        <span className={`permission-badge ${entry.permission}`}>{entry.permission}</span>
+                        <div><b>{entry.agent_id}</b><small>{entry.scope}</small></div>
+                      </li>
+                    ))}</ul>
+                  ) : (
+                    <div className="empty-state"><span className="empty-icon"><ShieldCheck size={18} /></span><b>No permission model yet.</b><span>Permissions will gate actions and approvals as the app grows.</span></div>
+                  )}
+                </article>
+              </section>
+
+              <section className="panels-bottom-grid lower-grid">
                 <article className="panel conversation-panel">
                   <div className="panel-heading"><div><p className="eyebrow">RECENT</p><h2>Active conversations</h2></div></div>
                   {conversations.length ? (
@@ -248,6 +269,13 @@ function App() {
                   ) : (
                     <div className="empty-state"><span className="empty-icon"><Users size={18} /></span><b>No saved sessions yet.</b><span>Alfred will store the first conversation after your first prompt.</span></div>
                   )}
+                </article>
+                <article className="panel provider-panel">
+                  <div className="panel-heading"><div><p className="eyebrow">PROVIDERS</p><h2>AI connection status</h2></div></div>
+                  <div className="provider-stack">
+                    <div className="provider-item"><strong>Mock local</strong><span>Ready</span></div>
+                    <div className="provider-item"><strong>Ollama</strong><span>Optional</span></div>
+                  </div>
                 </article>
               </section>
 

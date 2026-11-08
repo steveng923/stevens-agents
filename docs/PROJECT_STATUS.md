@@ -1,54 +1,31 @@
-import os
-import tempfile
-import unittest
-from pathlib import Path
+# Permission model
 
+This project now includes a simple permission model to reflect how specialized agents should operate under a least-privilege policy.
 
-class ApiDatabaseTests(unittest.TestCase):
-    def setUp(self):
-        self.temp_dir = tempfile.TemporaryDirectory()
-        os.environ["STEVENS_AGENTS_DB"] = str(Path(self.temp_dir.name) / "test.db")
-        from app import main
-        main.DB_PATH = Path(os.environ["STEVENS_AGENTS_DB"])
-        main.initialize_database()
-        self.api = main
+## Current permission levels
 
-    def tearDown(self):
-        self.temp_dir.cleanup()
-        os.environ.pop("STEVENS_AGENTS_DB", None)
+- `read`: Retrieve allowed information. Examples: personal tasks, goals, or calendar data that the user has authorized.
+- `suggest`: Prepare recommendations or proposed actions, but wait for explicit approval before destructive or sensitive actions.
+- `execute`: Run low-risk actions in-app only, and only after the user has approved the workflow or a prior policy allows it.
 
-    def test_seeded_agents_are_available(self):
-        agents = self.api.list_agents()
-        self.assertGreaterEqual(len(agents), 5)
-        self.assertEqual(agents[0]["id"], "alfred")
+## Seeded permissions
 
-    def test_task_creation_and_completion_persist(self):
-        created = self.api.create_task(self.api.TaskCreate(title="Review syllabus"))
-        self.assertEqual(created["title"], "Review syllabus")
-        self.assertFalse(created["completed"])
-        updated = self.api.update_task(created["id"], self.api.TaskUpdate(completed=True), self.api.Response())
-        self.assertTrue(updated["completed"])
-        self.assertTrue(any(task["id"] == created["id"] and task["completed"] for task in self.api.list_tasks()))
+The backend seeds a small set of default permissions for the initial agents:
 
-    def test_missing_task_returns_404(self):
-        from fastapi import HTTPException
-        with self.assertRaises(HTTPException) as error:
-            self.api.update_task(9999, self.api.TaskUpdate(completed=True), self.api.Response())
-        self.assertEqual(error.exception.status_code, 404)
+- Alfred: read, suggest, execute
+- Atlas: read
+- Echo: read
+- Forge: suggest
 
-    def test_blank_task_is_rejected(self):
-        from fastapi import HTTPException
-        with self.assertRaises(HTTPException):
-            self.api.create_task(self.api.TaskCreate(title="   "))
+These are intentionally minimal and local-only. They are not a substitute for real authentication, per-user access policies, or approval workflows.
 
-    def test_chat_and_memory_support(self):
-        response = self.api.chat(self.api.ChatRequest(message="What should I focus on today?", agent="Alfred"))
-        self.assertIn("focus", response["reply"].lower())
-        self.assertEqual(len(self.api.list_conversations()), 1)
-        memory = self.api.create_memory(self.api.MemoryCreate(key="focus", value="Prioritize the highest-value task", category="goals", source="user"))
-        self.assertEqual(memory["key"], "focus")
-        self.assertGreaterEqual(len(self.api.list_memory()), 1)
+## Future plan
 
+The next stage will add:
+- real user accounts and auth
+- per-user permission assignments
+- approval checkpoints for calendar edits, email sends, and sensitive actions
+- execution history and audit logging
+- explicit `READ`, `SUGGEST`, and `EXECUTE` enforcement on server-side endpoints
 
-if __name__ == "__main__":
-    unittest.main()
+No external account or permission system is connected yet.
